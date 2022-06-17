@@ -4,6 +4,8 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="ExercíciosDePython" />
+    <orderEntry type="module" module-name="Portifolio" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />

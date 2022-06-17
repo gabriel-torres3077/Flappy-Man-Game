@@ -1,6 +1,7 @@
-import sys, pygame
+import sys, pygame, os
 from random import randint
 from pygame.locals import *
+from objects import *
 
 
 def main():
@@ -12,49 +13,27 @@ def main():
 
     size = width, height = 600, 1000
 
-    background_color = 0, 0, 39
+    background_color = 1, 1, 76
 
     screen = pygame.display.set_mode(size)
-
-    class Player:
-        def __init__(self):
-            # jump movement
-            self.y = 200
-            self.base_velocity = 10
-            self.velocity = self.base_velocity
-            self.GRAVITY = 2
-            self.JUMP_HEIGHT = 10
-            self.MAX_VELOCITY = 30
-
-            self.player_color = (255, 0, 0)
-
-        def draw(self):
-            pygame.draw.circle(screen, self.player_color, (250, int(self.y)), 15)
-
-        def move(self):
-            if not self.velocity >= self.MAX_VELOCITY:
-                self.velocity += self.GRAVITY
-
-            self.y += self.velocity
-
-        def jump(self):
-            print('before_jumping', self.y, self.velocity, end=' | ')
-            self.velocity = -self.base_velocity * 1.5
-            print('after_jumping', self.y, self.velocity)
-
-    player = pygame.image.load("media/PacBoy.png")
-    player_dest = player.get_rect()
-
     def game():
         player = Player()
         states = {1: 'running', 2: 'paused'}
         state = states[1]
+        obstacles = []
+        pygame.time.set_timer(USEREVENT+2, 2000)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                if event.type == USEREVENT+2:
+                    print('object created')
+                    height = randint(400, 800)
+                    obstacles.append(Blocker(600, height, 65, 666))  # lower wall
+                    obstacles.append(Blocker(600, height-866, 65, 666))  # upper wall (right spawn point, height spawn(randomized), width, height
 
             screen.fill(background_color)
+
             if state == states[1]:  # game is running
                 if pygame.key.get_pressed()[K_SPACE]:
                     player.jump()
@@ -69,11 +48,23 @@ def main():
                 pygame.draw.line(screen, (0, 0, 0), (0, ground_position + 50), (1000, ground_position + 50), 10)
                 player.draw()
 
+                for obstacle in obstacles:
+                    if obstacle.x < obstacle.width * -1:
+                        obstacles.pop(obstacles.index(obstacle))
+
+                for obstacle in obstacles:
+                    obstacle.x -= 8
+                    obstacle.draw(screen)
+                    if obstacle.collide(player.hitbox):
+
+
+
             elif state == states[2]:  # game is paused
                 print('game paused')
                 game()
 
-            pygame.display.update()
+            pygame.display.flip()
+            #pygame.display.update()
             clock.tick(FPS)
 
     game()
